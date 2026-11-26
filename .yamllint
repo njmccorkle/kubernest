@@ -1,0 +1,18 @@
+extends: default
+
+ignore: |
+  .git/
+  .venv/
+  __pycache__/
+  site/
+
+rules:
+  document-start: disable
+  line-length: disable
+  indentation:
+    spaces: 2
+    indent-sequences: true
+  comments:
+    min-spaces-from-content: 1
+  truthy:
+    check-keys: false
