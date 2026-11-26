@@ -31,6 +31,17 @@ Runbooks should state prerequisites, target environment, commands, expected
 results, and rollback or recovery steps when applicable. Do not invent deployment
 commands for infrastructure that has not been implemented.
 
+## File formatting
+
+Use UTF-8, LF line endings, two-space indentation, and a final newline.
+Trim trailing whitespace in all files, including Markdown. Use blank lines for
+paragraphs or an explicit `<br>` when a hard line break is needed.
+
+The root `.editorconfig` defines these editor defaults, with four-space
+indentation for Python, tabs for Makefiles, and CRLF for Windows batch scripts.
+The root `.gitattributes` normalizes text files to LF, except `.bat` and `.cmd`
+files, which use CRLF. Git detects binary files and leaves them untouched.
+
 ## Dependency updates
 
 Dependabot checks GitHub Actions and the Python documentation dependencies in
