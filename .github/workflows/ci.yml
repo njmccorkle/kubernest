@@ -28,6 +28,7 @@ jobs:
     outputs:
       validate-title: ${{ github.event_name == 'pull_request' && (steps.filter.outputs.validate-title == 'true' || steps.filter.outputs.validate-title_count == '0') }}
       documentation: ${{ steps.filter.outputs.documentation }}
+      actionlint: ${{ steps.filter.outputs.actionlint }}
     steps:
       - name: Check out repository for push comparison
         if: github.event_name == 'push'
@@ -48,6 +49,11 @@ jobs:
               - 'mkdocs.yml'
               - 'requirements-docs.txt'
               - '.github/workflows/ci.yml'
+            actionlint:
+              - '.github/workflows/**/*.yml'
+              - '.github/workflows/**/*.yaml'
+              - '.github/actionlint.yml'
+              - '.github/actionlint.yaml'
 
   validate-title:
     name: Validate PR title
@@ -88,12 +94,31 @@ jobs:
       - name: Build documentation
         run: python -m mkdocs build --strict
 
+  actionlint:
+    name: Lint GitHub Actions
+    needs: changes
+    if: needs.changes.outputs.actionlint == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Lint workflow files
+        uses: docker://rhysd/actionlint:1.7.12
+        with:
+          args: -color
+
   required-checks:
     name: Required checks pass
     needs:
       - changes
       - validate-title
       - documentation
+      - actionlint
     if: always()
     runs-on: ubuntu-latest
     steps:
@@ -104,7 +129,7 @@ jobs:
           node <<'NODE'
           const needs = JSON.parse(process.env.NEEDS);
           const expected = { changes: 'success' };
-          for (const job of ['validate-title', 'documentation']) {
+          for (const job of ['validate-title', 'documentation', 'actionlint']) {
             const applicable = needs.changes.outputs[job];
             if (!['true', 'false'].includes(applicable)) {
               throw new Error(`Change detection did not return valid applicability for ${job}`);

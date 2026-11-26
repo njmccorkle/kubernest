@@ -45,6 +45,7 @@ jobs and the final gate consume.
 | Detect changes | Every CI run unless cancelled; it must run before filtering other jobs |
 | Validate PR title | PR events with the `**` wildcard filter; also runs for empty PR diffs |
 | Build documentation | Changes matching the documentation filter |
+| Lint GitHub Actions | Changes to workflow YAML files or `.github/actionlint.yml` / `.github/actionlint.yaml` |
 | Required checks pass | Always after its dependencies, including failures and skips |
 
 The title filter applies to any changed file, including dotfiles. Its
@@ -57,6 +58,11 @@ When adding a check, add its filter, applicability output, dependency on change
 detection, and output-based condition. Add the job to the final gate's `needs`
 list and applicability verification list. Do not path-filter change detection
 or the final gate: they establish and verify the policy for other jobs.
+
+The workflow lint job runs the version-pinned official actionlint container.
+It checks all workflow files, including expressions and inline shell scripts,
+without executing those scripts. Its failures block the final gate when the
+actionlint filter applies.
 
 Preview the site with `mkdocs serve` using the Python command for your shell.
 Check changed pages, navigation, and diagrams in the browser. The strict build
