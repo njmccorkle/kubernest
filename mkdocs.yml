@@ -1,0 +1,35 @@
+site_name: Kubernest
+site_description: Homelab cluster architecture, documentation, and runbooks.
+repo_url: https://github.com/njmccorkle/kubernest
+docs_dir: docs
+site_dir: site
+strict: true
+
+theme:
+  name: mkdocs
+
+plugins:
+  - search
+  - mermaid2:
+      version: 12.3.0
+      arguments:
+        securityLevel: strict
+
+validation:
+  nav:
+    omitted_files: warn
+  links:
+    anchors: warn
+
+nav:
+  - Home: index.md
+  - Getting started: getting-started/index.md
+  - Architecture: architecture/index.md
+  - Runbooks:
+      - Documentation site: runbooks/documentation-site.md
+  - Reference:
+      - Documentation conventions: reference/documentation.md
+  - Decisions:
+      - Use MkDocs: decisions/0001-use-mkdocs.md
+  - Design history:
+      - Initial cluster design: superpowers/specs/2026-11-25-kubernest-design.md
