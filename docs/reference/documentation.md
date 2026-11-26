@@ -31,6 +31,18 @@ Runbooks should state prerequisites, target environment, commands, expected
 results, and rollback or recovery steps when applicable. Do not invent deployment
 commands for infrastructure that has not been implemented.
 
+## Dependency updates
+
+Dependabot checks GitHub Actions and the Python documentation dependencies in
+`requirements-docs.txt` weekly. It groups minor and patch updates separately for
+each ecosystem; major updates receive individual PRs.
+Update PR titles use Conventional Commit prefixes: `ci(deps)` for Actions and
+`build(deps)` for documentation packages.
+
+The Mermaid JavaScript version in `mkdocs.yml` is a separate CDN pin.
+Dependabot does not update that pin; review and update it manually, with a browser
+preview of the diagrams.
+
 ## Mermaid diagrams
 
 Write diagrams in fenced blocks labelled `mermaid`. For example:
