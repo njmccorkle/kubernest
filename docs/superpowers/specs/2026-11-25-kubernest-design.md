@@ -1,7 +1,7 @@
 # Kubernest: homelab k3s cluster design
 
 ## Intent
-Replace a single-host, monolithic docker-compose homelab with a 3-node k3s cluster that survives a node failure, spreads workloads, and is a place to learn Kubernetes. Everything (host setup, cluster config, apps) lives in this repo and is repeatable. The cluster is rehearsed on Hyper-V VMs on a laptop, then rebuilt unchanged on the real hardware.
+Replace a single-host, monolithic docker-compose homelab with a 3-node k3s cluster that survives a node failure, spreads workloads, and is a place to learn Kubernetes. Everything (host setup, cluster config, apps) lives in this repo and is repeatable. The cluster is rehearsed on VirtualBox VMs (created by Vagrant) on a laptop, then rebuilt unchanged on the real hardware.
 
 ## Goals
 - Survive loss of any one node (3 control-plane nodes, embedded etcd).
@@ -12,7 +12,7 @@ Replace a single-host, monolithic docker-compose homelab with a 3-node k3s clust
 
 ## Non-goals
 - Multi-cluster, multi-tenant, or team workflows.
-- Running Proxmox/Hyper-V provisioning for production beyond documenting VM specs (Proxmox VM creation may be added later).
+- Running Proxmox/VirtualBox provisioning for production beyond documenting VM specs (Proxmox VM creation may be added later).
 - WSL as the cluster (WSL2 shares one kernel/network, so it cannot host 3 nodes).
 
 ## Anti-goals
@@ -21,7 +21,10 @@ Replace a single-host, monolithic docker-compose homelab with a 3-node k3s clust
 - Drift between what is deployed and what is committed.
 
 ## Constraints
-- Rehearsal: 3 Ubuntu LTS VMs on Hyper-V, driven from WSL (Ansible, kubectl, helm).
+- Rehearsal: 3 Ubuntu LTS VMs on VirtualBox, created by Vagrant, driven from WSL (Ansible, kubectl, helm). The laptop runs Windows 11 Home, which has no Hyper-V.
+- etcd is sensitive to disk latency. Give nodes reasonably fast storage and keep Longhorn data off the disk etcd uses where possible (for example a separate virtual disk).
+- Surviving one node loss is a verified requirement: during rehearsal, power off each node in turn and confirm the API, LoadBalancer IPs, Longhorn volumes and CNPG all recover.
+- Rehearsal host is memory-limited (about 15.7 GB). VirtualBox runs on the Windows Hypervisor Platform alongside WSL2/Docker Desktop, so it is slower than native. Starting point: about 2 vCPU and 3 GB per VM, with WSL memory capped in `.wslconfig`.
 - Production: 3 micro-PCs running Proxmox, one k3s VM per Proxmox node.
 - Storage: NAS (NTFS share) reachable over the network for media/downloads.
 - Domain `mccorkle.co` (Namecheap registrar, DNS on Cloudflare).
@@ -40,20 +43,25 @@ Replace a single-host, monolithic docker-compose homelab with a 3-node k3s clust
 - B. Ansible does everything including Helm. Simpler, but no drift correction or ArgoCD.
 - C. Separate infra and apps repos. Cleaner access control, extra overhead for a solo lab.
 
+Rehearsal VM host (Windows 11 Home, no Hyper-V):
+- **VirtualBox + Vagrant (chosen).** Free, works on Home, and one `Vagrantfile` makes the VMs repeatable. Cost: slower than Hyper-V while WSL2 is active.
+- VMware Workstation Pro: faster, but no first-class repo-driven provisioning.
+- Multipass: uses VirtualBox on Home anyway, with awkward static/bridged networking.
+
 Ingress: Traefik chosen over keeping Caddy (bundled with k3s, routes live beside each app). Secrets: Sealed Secrets chosen over External Secrets + Bitwarden for simplicity; ESO can be added later.
 
 ## Proposed repo layout (builder may adjust)
 ```
-ansible/        inventories (hyperv, prod), roles, playbooks
+ansible/        inventories (rehearsal, prod), roles, playbooks
 apps/           ArgoCD Applications (app-of-apps root)
 platform/       values/manifests for cert-manager, Traefik, Longhorn, CNPG, Authelia...
 workloads/      media apps, monitoring, wiki
-hyperv/         PowerShell to create/destroy rehearsal VMs
+vagrant/        Vagrantfile for the 3 rehearsal VMs (static private IPs, plus a bridged or host-only NIC for LoadBalancer IPs)
 docs/           wiki content, runbooks, specs
 ```
 
 ## Decisions left to the builder
-- Exact k3s/chart versions, MetalLB vs servicelb, NFS vs SMB CSI (depends on NAS), Hyper-V VM sizing, wiki static-site generator, backup targets for Longhorn/CNPG, gluetun provider settings.
+- Exact k3s/chart versions, MetalLB vs servicelb, NFS vs SMB CSI (depends on NAS), Vagrant/VirtualBox VM sizing, network mode, box choice, wiki static-site generator, backup targets for Longhorn/CNPG, gluetun provider settings.
 - Order of migration (suggested: platform, monitoring, Postgres, media apps, Plex last).
 
 ## Open items to confirm with the owner
