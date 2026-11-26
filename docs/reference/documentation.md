@@ -44,11 +44,12 @@ files, which use CRLF. Git detects binary files and leaves them untouched.
 
 ## Dependency updates
 
-Dependabot checks GitHub Actions and the Python documentation dependencies in
-`requirements-docs.txt` weekly. It groups minor and patch updates separately for
+Dependabot checks GitHub Actions and the Python documentation and CI dependencies
+in `requirements-docs.txt` and `requirements-ci.txt` weekly.
+It groups minor and patch updates separately for
 each ecosystem; major updates receive individual PRs.
 Update PR titles use Conventional Commit prefixes: `ci(deps)` for Actions and
-`build(deps)` for documentation packages.
+`build(deps)` for Python tooling.
 
 The Mermaid JavaScript version in `mkdocs.yml` is a separate CDN pin.
 Dependabot does not update that pin; review and update it manually, with a browser

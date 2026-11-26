@@ -24,7 +24,7 @@ updates:
       prefix: build
       include: scope
     groups:
-      documentation-minor-patch:
+      python-minor-patch:
         patterns:
           - "*"
         update-types:

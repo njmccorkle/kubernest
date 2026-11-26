@@ -46,6 +46,7 @@ jobs and the final gate consume.
 | Validate PR title | PR events with the `**` wildcard filter; also runs for empty PR diffs |
 | Build documentation | Changes matching the documentation filter |
 | Lint GitHub Actions | Changes to workflow YAML files or `.github/actionlint.yml` / `.github/actionlint.yaml` |
+| Lint YAML | Changes to any `.yml` / `.yaml` file, `.yamllint`, or `requirements-ci.txt` |
 | Required checks pass | Always after its dependencies, including failures and skips |
 
 The title filter applies to any changed file, including dotfiles. Its
@@ -63,6 +64,16 @@ The workflow lint job runs the version-pinned official actionlint container.
 It checks all workflow files, including expressions and inline shell scripts,
 without executing those scripts. Its failures block the final gate when the
 actionlint filter applies.
+
+The YAML lint job checks repository YAML with the rules in `.yamllint`.
+It enforces two-space indentation and rejects duplicate keys and trailing
+whitespace. It permits GitHub's `on` key, optional document-start markers,
+single-space inline comments, and long workflow expressions. Generated output
+and local environment directories are excluded.
+
+To run it locally, install `requirements-ci.txt` in your virtual environment and
+run `python -m yamllint --strict .` using the Python command for your shell.
+Use LF line endings as defined in `.gitattributes` and `.editorconfig`.
 
 Preview the site with `mkdocs serve` using the Python command for your shell.
 Check changed pages, navigation, and diagrams in the browser. The strict build
