@@ -1,0 +1,53 @@
+---
+- name: Validate supported Ubuntu release
+  ansible.builtin.assert:
+    that:
+      - ansible_distribution == "Ubuntu"
+      - ansible_distribution_version is match("^24\\.04")
+    fail_msg: "Failed: the common role supports only Ubuntu 24.04 hosts."
+
+- name: Update apt cache and upgrade packages
+  ansible.builtin.apt:
+    update_cache: true
+    upgrade: dist
+    cache_valid_time: 3600
+  notify: Restart chrony
+
+- name: Install common packages
+  ansible.builtin.apt:
+    name: "{{ common_packages }}"
+    state: present
+  notify: Restart chrony
+
+- name: Gather package facts
+  ansible.builtin.package_facts:
+    manager: auto
+
+- name: Confirm chrony package is installed
+  ansible.builtin.assert:
+    that:
+      - "'chrony' in ansible_facts.packages"
+    fail_msg: "Failed: chrony must be installed by common_packages."
+
+- name: Configure /etc/timezone
+  ansible.builtin.copy:
+    dest: /etc/timezone
+    content: "{{ common_timezone }}\n"
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart chrony
+
+- name: Configure /etc/localtime
+  ansible.builtin.file:
+    src: "/usr/share/zoneinfo/{{ common_timezone }}"
+    dest: /etc/localtime
+    state: link
+    force: true
+  notify: Restart chrony
+
+- name: Ensure chrony service is enabled and running
+  ansible.builtin.service:
+    name: chrony
+    enabled: true
+    state: started
