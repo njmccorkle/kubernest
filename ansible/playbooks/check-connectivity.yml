@@ -1,6 +1,6 @@
 ---
-- name: Verify access to rehearsal nodes
-  hosts: rehearsal
+- name: Verify access to nodes
+  hosts: k3s_nodes
   gather_facts: true
   tasks:
     - name: Confirm Ansible can reach each node
