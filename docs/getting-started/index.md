@@ -85,5 +85,31 @@ node). Shut down all nodes cleanly with
 `vagrant halt`; run `vagrant up --provider=virtualbox` from the same directory
 to start them again. The VMs remain registered and their disks are preserved.
 
-VM management runs in Windows PowerShell. Cluster setup is not yet implemented;
-once available, Ansible, kubectl, and Helm are intended to run from WSL.
+VM management runs in Windows PowerShell. Install Ansible in WSL, not on
+Windows or the VMs. The repository includes an Ansible inventory and a
+non-mutating connectivity check for the rehearsal nodes.
+
+From WSL, at the repository root, copy the Vagrant-generated SSH keys into
+WSL's private SSH directory and run the check:
+
+```bash
+export ANSIBLE_CONFIG="$PWD/ansible.cfg"
+bash ansible/scripts/sync-vagrant-keys.sh
+ansible-playbook ansible/playbooks/check-connectivity.yml
+```
+
+Setting `ANSIBLE_CONFIG` explicitly is needed when the checkout is under
+`/mnt/c`; Ansible does not auto-load configuration from a world-writable
+Windows-mounted directory.
+The script reads keys from `vagrant/.vagrant` in this checkout, which is
+ignored by Git, and copies them to `~/.ssh/kubernest-vagrant` with owner-only
+permissions. If Vagrant state is in another checkout, set
+`KUBERNEST_VAGRANT_DIR` to that checkout's `vagrant` directory before running
+the script. Re-run it after recreating a VM so the copied keys stay current.
+The playbook should report `pong` for all three nodes and displays their
+gathered facts; it does not change guest configuration.
+If a recreated VM has a new SSH host key, remove its old entry with
+`ssh-keygen -R 192.168.56.11` (use that node's address) before reconnecting.
+
+Host preparation and cluster setup are not yet implemented. Ansible, kubectl,
+and Helm are intended to run from WSL.

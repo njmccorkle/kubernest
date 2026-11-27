@@ -1,0 +1,7 @@
+---
+- name: Verify access to rehearsal nodes
+  hosts: rehearsal
+  gather_facts: true
+  tasks:
+    - name: Confirm Ansible can reach each node
+      ansible.builtin.ping:
