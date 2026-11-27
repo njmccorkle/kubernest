@@ -82,8 +82,7 @@ Before any cluster provisioning, recheck current VM status and connectivity. The
 ### Task 2: Make Ansible reusable across environments
 
 **Files:**
-- Modify: `ansible/inventories/rehearsal/hosts.yml`
-- Create: `ansible/group_vars/k3s_nodes.yml`
+- Modify: `ansible/inventories/rehearsal/hosts.yml` for shared `k3s_nodes` membership and variables
 - Create: `ansible/playbooks/preflight.yml`
 - Modify: `ansible/playbooks/check-connectivity.yml`
 - Create: `ansible/AGENTS.md`
@@ -94,7 +93,7 @@ Before any cluster provisioning, recheck current VM status and connectivity. The
 - `preflight.yml` and the connectivity playbook accept an inventory and target the shared group.
 - Production addresses and credentials must come from confirmed owner-provided values, not rehearsal defaults.
 
-- [ ] Refactor the rehearsal inventory so its nodes belong to `k3s_nodes` while preserving the `rehearsal` environment grouping.
+- [x] Refactor the rehearsal inventory so its nodes belong to `k3s_nodes` while preserving the `rehearsal` environment grouping.
 - [ ] Add non-mutating checks for SSH reachability, supported Ubuntu release, CPU, memory, and required storage.
 - [ ] Keep Ansible roles idempotent, prefer Ansible modules over shell commands, and guard unavoidable commands against repeated changes.
 - [ ] Verify syntax and connectivity against the rehearsal inventory. Task 11 verifies production after its inventory and credentials are available.
@@ -117,7 +116,7 @@ Expected: syntax validation succeeds and each rehearsal node passes the prefligh
 - Create: `ansible/roles/common/`
 - Create: `ansible/roles/k3s_prerequisites/`
 - Create: `ansible/playbooks/site.yml`
-- Modify: `ansible/group_vars/k3s_nodes.yml`
+- Modify: `ansible/inventories/rehearsal/hosts.yml` as needed for shared variables
 - Modify: `docs/architecture/index.md`
 - Create: `docs/runbooks/host-preparation.md`
 

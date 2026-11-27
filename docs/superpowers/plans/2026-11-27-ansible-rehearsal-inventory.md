@@ -31,15 +31,14 @@
 ### Task 1: Add shared inventory membership and variables
 
 **Files:**
-- Modify: `ansible/inventories/rehearsal/hosts.yml`
-- Modify: `ansible/inventories/rehearsal/hosts.yml` to add shared `k3s_nodes` Python variables
+- Modify: `ansible/inventories/rehearsal/hosts.yml` for shared membership and `k3s_nodes` Python variables
 - Modify: `ansible/playbooks/check-connectivity.yml`
 
 **Interfaces:**
 - Consumes: Existing rehearsal inventory names and addresses, WSL private SSH key paths, and the existing `sync-vagrant-keys.sh` key layout.
 - Produces: A rehearsal inventory whose nodes belong to `k3s_nodes` and `rehearsal`; shared `k3s_nodes` Python configuration; a connectivity playbook that targets `k3s_nodes`.
 
-- [ ] **Step 1: Refactor `ansible/inventories/rehearsal/hosts.yml`**
+- [x] **Step 1: Refactor `ansible/inventories/rehearsal/hosts.yml`**
 
 Replace the inventory hierarchy so `all.children.k3s_nodes.hosts` contains the three nodes and their `ansible_host` values.
 
@@ -61,12 +60,12 @@ ansible_python_interpreter: /usr/bin/python3
 
 This location is loaded when the inventory file is supplied explicitly. Do not add rehearsal addresses, SSH users, private-key paths, k3s versions, or production values to the shared block.
 
-- [ ] **Step 2: Confirm shared variables belong only to `k3s_nodes`**
+- [x] **Step 2: Confirm shared variables belong only to `k3s_nodes`**
 
 Verify the inventory has no interpreter setting under `all.children.rehearsal.vars` or in a node host record.
 Keep rehearsal-only settings under `all.children.rehearsal.vars`.
 
-- [ ] **Step 3: Update `ansible/playbooks/check-connectivity.yml`**
+- [x] **Step 3: Update `ansible/playbooks/check-connectivity.yml`**
 
 Change the play target from `rehearsal` to `k3s_nodes`.
 
@@ -75,7 +74,7 @@ Keep the play name environment-neutral and retain:
 - `gather_facts: true`
 - `ansible.builtin.ping`
 
-- [ ] **Step 4: Verify inventory group membership**
+- [x] **Step 4: Verify inventory group membership**
 
 From WSL at the repository root:
 
@@ -106,28 +105,45 @@ Expected:
 - All three nodes report `pong`.
 - The play reports changed `0` for all nodes.
 
-- [ ] **Step 6: Review the resulting diff**
+Completed validation:
+
+- `ansible-inventory -i ansible/inventories/rehearsal/hosts.yml --graph` passed and showed all three nodes under both groups.
+- `ansible-inventory -i ansible/inventories/rehearsal/hosts.yml --host k3s-1` passed and resolved the expected host, user, interpreter, and private-key values.
+- `ansible-playbook --syntax-check -i ansible/inventories/rehearsal/hosts.yml ansible/playbooks/check-connectivity.yml` passed.
+- Live connectivity remains pending because the Vagrant VMs are not created, so `pong` and changed counts cannot be verified.
+
+- [x] **Step 6: Review the resulting diff**
 
 Run:
 
 ```bash
 git --no-pager diff --check
-git --no-pager diff -- ansible/inventories/rehearsal/hosts.yml ansible/playbooks/check-connectivity.yml
+git --no-pager diff -- \
+  ansible/inventories/rehearsal/hosts.yml \
+  ansible/playbooks/check-connectivity.yml \
+  mkdocs.yml \
+  docs/superpowers/plans/2026-11-26-kubernest-implementation.md \
+  docs/superpowers/plans/2026-11-27-ansible-rehearsal-inventory.md
 ```
 
 Confirm:
 
 - No host mutation play tasks were added.
 - No plaintext credentials or production addresses were introduced.
-- Only the intended inventory and playbook files are changed.
+- Only the intended inventory, playbook, documentation navigation, roadmap, and plan files are changed.
 
 - [ ] **Step 7: Commit and open the PR**
 
 Create a Conventional Commit:
 
 ```bash
-git add ansible/inventories/rehearsal/hosts.yml ansible/playbooks/check-connectivity.yml
-git commit -m "feat(ansible): add shared k3s inventory group"
+git add \
+  ansible/inventories/rehearsal/hosts.yml \
+  ansible/playbooks/check-connectivity.yml \
+  mkdocs.yml \
+  docs/superpowers/plans/2026-11-26-kubernest-implementation.md \
+  docs/superpowers/plans/2026-11-27-ansible-rehearsal-inventory.md
+git commit -m "docs: finish ansible inventory PR 1"
 ```
 
 Push the branch and open a PR with title `feat(ansible): add shared k3s inventory group`.
