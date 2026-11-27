@@ -41,3 +41,13 @@ No convergence claim is made.
 
 - `docs/runbooks/host-preparation.md`
 
+## Task 5 lint gap fix summary
+
+- Ran `python -m yamllint --strict .` and confirmed only `new-line-at-end-of-file`
+  failures in:
+  - `ansible/group_vars/k3s_nodes.yml`
+  - `ansible/playbooks/site.yml`
+  - `ansible/roles/common/handlers/main.yml`
+- Added only a final newline at EOF to each listed file (no semantic YAML changes).
+- Re-ran `python -m yamllint --strict .` and it passed (exit code 0).
+
