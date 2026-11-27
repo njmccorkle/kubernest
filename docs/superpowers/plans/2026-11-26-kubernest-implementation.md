@@ -61,6 +61,8 @@ Before any cluster provisioning, recheck current VM status and connectivity. The
 
 ### Task 1: Decide cluster bootstrap and network boundaries
 
+**Status:** Complete.
+
 **Files:**
 - Create: `docs/decisions/0002-cluster-bootstrap-and-networking.md`
 - Modify: `docs/architecture/index.md`
@@ -69,13 +71,13 @@ Before any cluster provisioning, recheck current VM status and connectivity. The
 - Produces the pinned k3s version, stable API endpoint, ingress ownership, LoadBalancer strategy, and network ranges used by host and cluster configuration.
 - Does not change the existing rehearsal network without approval.
 
-- [ ] Select and record the k3s version and supported upgrade policy.
-- [ ] Choose a stable Kubernetes API endpoint for three servers and document how each environment resolves it.
-- [ ] Choose ServiceLB or MetalLB and reserve non-overlapping addresses for the selected network design. Record that the current host-only rehearsal network does not provide LAN exposure.
-- [ ] Decide whether Traefik remains k3s-managed or becomes an ArgoCD-managed release; give it one configuration owner.
-- [ ] Record that this plan extends the initial design's Proxmox VM provisioning non-goal by managing production VM definitions through Ansible, consistent with `AGENTS.md`.
-- [ ] Confirm VM memory, CPU, and disk budgets before adding platform services.
-- [ ] Verify that the selected API and service address ranges do not overlap with the host, WSL, or intended production networks.
+- [x] Select and record the k3s version and supported upgrade policy.
+- [x] Choose a stable Kubernetes API endpoint for three servers and document how each environment resolves it.
+- [x] Choose ServiceLB or MetalLB and reserve non-overlapping addresses for the selected network design. Record that the current host-only rehearsal network does not provide LAN exposure.
+- [x] Decide whether Traefik remains k3s-managed or becomes an ArgoCD-managed release; give it one configuration owner.
+- [x] Record that this plan extends the initial design's Proxmox VM provisioning non-goal by managing production VM definitions through Ansible, consistent with `AGENTS.md`.
+- [x] Confirm VM memory, CPU, and disk budgets before adding platform services.
+- [x] Verify that the selected API and service address ranges do not overlap with the host, WSL, or intended production networks.
 
 ### Task 2: Make Ansible reusable across environments
 
