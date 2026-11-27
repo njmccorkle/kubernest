@@ -27,7 +27,7 @@
 ## Review Focus
 
 - **Stale VM or SSH-key state:** verify each VM and run the WSL connectivity check before provisioning; the existing plan records that `k3s-2` previously needed a reload.
-- **Inventory-specific assumptions:** run Ansible syntax checks and the preflight against rehearsal and production inventories independently; shared roles must not embed rehearsal IPs or hostnames.
+- **Inventory-specific assumptions:** shared roles must not embed rehearsal IPs or hostnames. Validate rehearsal during host setup and validate production after Task 11 creates its inventory.
 - **Loss of API or etcd quorum:** verify all three etcd members and perform node-loss tests in rehearsal before production.
 - **LoadBalancer reachability:** test service access from the intended client network; the existing host-only rehearsal network does not imply LAN reachability.
 - **Loss of state or recovery credentials:** test Longhorn, CloudNativePG, and etcd restore procedures before migrating important workloads.
@@ -73,7 +73,7 @@ Before any cluster provisioning, recheck current VM status and connectivity. The
 - [ ] Choose a stable Kubernetes API endpoint for three servers and document how each environment resolves it.
 - [ ] Choose ServiceLB or MetalLB and reserve non-overlapping addresses for the selected network design. Record that the current host-only rehearsal network does not provide LAN exposure.
 - [ ] Decide whether Traefik remains k3s-managed or becomes an ArgoCD-managed release; give it one configuration owner.
-- [ ] Reconcile the initial design's Proxmox VM provisioning non-goal with the repository's infrastructure source-of-truth rule. This plan includes Ansible-managed production VM definitions.
+- [ ] Record that this plan extends the initial design's Proxmox VM provisioning non-goal by managing production VM definitions through Ansible, consistent with `AGENTS.md`.
 - [ ] Confirm VM memory, CPU, and disk budgets before adding platform services.
 - [ ] Verify that the selected API and service address ranges do not overlap with the host, WSL, or intended production networks.
 
@@ -88,14 +88,14 @@ Before any cluster provisioning, recheck current VM status and connectivity. The
 - Modify: `docs/getting-started/index.md`
 
 **Interfaces:**
-- Both inventories expose a shared `k3s_nodes` group; environment-specific aliases, addresses, users, and connection settings stay in their inventory.
+- The rehearsal inventory exposes a shared `k3s_nodes` group; Task 11 adds the production inventory with the same group layout. Environment-specific aliases, addresses, users, and connection settings stay in their inventory.
 - `preflight.yml` and the connectivity playbook accept an inventory and target the shared group.
 - Production addresses and credentials must come from confirmed owner-provided values, not rehearsal defaults.
 
 - [ ] Refactor the rehearsal inventory so its nodes belong to `k3s_nodes` while preserving the `rehearsal` environment grouping.
 - [ ] Add non-mutating checks for SSH reachability, supported Ubuntu release, CPU, memory, and required storage.
 - [ ] Keep Ansible roles idempotent, prefer Ansible modules over shell commands, and guard unavoidable commands against repeated changes.
-- [ ] Verify syntax and connectivity against the rehearsal inventory. Test production only after its inventory and credentials are available.
+- [ ] Verify syntax and connectivity against the rehearsal inventory. Task 11 verifies production after its inventory and credentials are available.
 - [ ] Document WSL setup, the explicit `ANSIBLE_CONFIG` setting, key synchronization, and expected preflight results.
 
 Run from WSL at the repository root:
