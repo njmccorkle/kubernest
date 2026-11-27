@@ -36,3 +36,4 @@ nav:
       - VirtualBox VM setup: superpowers/specs/2026-11-26-virtualbox-vm-setup-design.md
   - Implementation plans:
       - VirtualBox VM setup: superpowers/plans/2026-11-26-virtualbox-vm-setup.md
+      - Kubernest end-to-end rollout: superpowers/plans/2026-11-26-kubernest-implementation.md
