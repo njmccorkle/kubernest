@@ -1,0 +1,12 @@
+---
+- name: Load k3s kernel modules
+  ansible.builtin.command:
+    cmd: modprobe -a {{ k3s_modules | join(' ') }}
+  when: not ansible_check_mode
+  changed_when: false
+
+- name: Apply k3s sysctl settings
+  ansible.builtin.command:
+    cmd: sysctl --system
+  when: not ansible_check_mode
+  changed_when: false

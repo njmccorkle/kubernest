@@ -1,0 +1,85 @@
+---
+- name: Collect root mount facts
+  ansible.builtin.set_fact:
+    k3s_root_mount: >-
+      {{
+        (ansible_mounts | selectattr('mount', 'equalto', '/') | list | first)
+        | default({})
+      }}
+  changed_when: false
+
+- name: Read current swap devices
+  ansible.builtin.command:
+    cmd: cat /proc/swaps
+  register: k3s_proc_swaps
+  changed_when: false
+
+- name: Validate k3s host prerequisites before mutation
+  ansible.builtin.assert:
+    that:
+      - ansible_distribution == "Ubuntu"
+      - ansible_distribution_version == "24.04"
+      - k3s_root_mount | length > 0
+      - (k3s_root_mount.size_available | int) >= (k3s_min_root_bytes | int)
+      - >
+        (k3s_proc_swaps.stdout_lines[1:] | select('match', '\S') | list | length == 0)
+        or (ansible_swaptotal_mb | int > 0)
+    fail_msg: >-
+      Host must run Ubuntu 24.04 with at least {{ k3s_min_root_bytes }} bytes
+      available on / and have swap either already disabled or detectable for this
+      role to disable.
+
+- name: Persist required k3s kernel modules
+  ansible.builtin.copy:
+    dest: /etc/modules-load.d/k3s.conf
+    mode: "0644"
+    content: |
+      {% for module in k3s_modules %}
+      {{ module }}
+      {% endfor %}
+  notify: Load k3s kernel modules
+
+- name: Persist required k3s sysctl settings
+  ansible.builtin.copy:
+    dest: /etc/sysctl.d/99-k3s.conf
+    mode: "0644"
+    content: |
+      {% for setting in k3s_sysctl_settings | dict2items | sort(attribute='key') %}
+      {{ setting.key }}={{ setting.value }}
+      {% endfor %}
+  notify: Apply k3s sysctl settings
+
+- name: Disable swap entries in /etc/fstab
+  ansible.builtin.replace:
+    path: /etc/fstab
+    regexp: '^(?!#)(\S+\s+\S+\s+swap\s+\S+\s+\S+\s+\S+)$'
+    replace: '# \1'
+
+- name: Disable active swap devices
+  ansible.builtin.command:
+    cmd: swapoff --all
+  when:
+    - ansible_swaptotal_mb | int > 0
+    - not ansible_check_mode
+  changed_when: true
+
+- name: Apply prerequisite handlers before runtime verification
+  ansible.builtin.meta: flush_handlers
+
+- name: Read runtime forwarding settings
+  ansible.builtin.command:
+    cmd: >-
+      sysctl
+      net.ipv4.ip_forward
+      net.bridge.bridge-nf-call-iptables
+      net.bridge.bridge-nf-call-ip6tables
+  register: k3s_runtime_sysctl
+  changed_when: false
+
+- name: Assert runtime forwarding values are enabled
+  ansible.builtin.assert:
+    that:
+      - k3s_runtime_sysctl.stdout is search('(?m)^net\.ipv4\.ip_forward\s*=\s*1$')
+      - k3s_runtime_sysctl.stdout is search('(?m)^net\.bridge\.bridge-nf-call-iptables\s*=\s*1$')
+      - k3s_runtime_sysctl.stdout is search('(?m)^net\.bridge\.bridge-nf-call-ip6tables\s*=\s*1$')
+    fail_msg: Runtime forwarding sysctl values must all be set to 1.
