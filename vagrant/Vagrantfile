@@ -1,0 +1,25 @@
+Vagrant.configure("2") do |config|
+  config.vm.box = "cloud-image/ubuntu-24.04"
+  config.vm.box_version = "20260926.0.0"
+  config.vm.boot_timeout = 600
+  config.vm.synced_folder ".", "/vagrant", disabled: true
+
+  {
+    "k3s-1" => "192.168.56.11",
+    "k3s-2" => "192.168.56.12",
+    "k3s-3" => "192.168.56.13"
+  }.each do |name, address|
+    config.vm.define name do |node|
+      node.vm.hostname = name
+      node.vm.network "private_network", ip: address
+
+      node.vm.provider "virtualbox" do |vb|
+        vb.name = "kubernest-#{name}"
+        vb.memory = 3072
+        vb.cpus = 2
+        vb.customize ["modifyvm", :id, "--graphicscontroller", "vboxsvga"]
+        vb.customize ["modifyvm", :id, "--vram", "126"]
+      end
+    end
+  end
+end
