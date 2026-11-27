@@ -11,7 +11,6 @@
     update_cache: true
     upgrade: dist
     cache_valid_time: 3600
-  notify: Restart chrony
 
 - name: Install common packages
   ansible.builtin.apt:
