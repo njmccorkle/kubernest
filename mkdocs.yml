@@ -31,6 +31,7 @@ nav:
       - Documentation conventions: reference/documentation.md
   - Decisions:
       - Use MkDocs: decisions/0001-use-mkdocs.md
+      - Cluster bootstrap and networking: decisions/0002-cluster-bootstrap-and-networking.md
   - Design history:
       - Initial cluster design: superpowers/specs/2026-11-25-kubernest-design.md
       - VirtualBox VM setup: superpowers/specs/2026-11-26-virtualbox-vm-setup-design.md
