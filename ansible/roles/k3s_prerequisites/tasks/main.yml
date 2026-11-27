@@ -75,6 +75,7 @@
       net.bridge.bridge-nf-call-ip6tables
   register: k3s_runtime_sysctl
   changed_when: false
+  when: not ansible_check_mode
 
 - name: Assert runtime forwarding values are enabled
   ansible.builtin.assert:
@@ -83,3 +84,4 @@
       - k3s_runtime_sysctl.stdout is search('(?m)^net\.bridge\.bridge-nf-call-iptables\s*=\s*1$')
       - k3s_runtime_sysctl.stdout is search('(?m)^net\.bridge\.bridge-nf-call-ip6tables\s*=\s*1$')
     fail_msg: Runtime forwarding sysctl values must all be set to 1.
+  when: not ansible_check_mode
