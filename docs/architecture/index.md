@@ -10,8 +10,9 @@ The workflows do not deploy infrastructure or the documentation site.
 
 ## Planned cluster
 
-The Vagrant definition for the three-node rehearsal environment is implemented.
-The k3s cluster and its services are still planned and are not deployed.
+The Vagrant definition and initial Ansible connectivity check for the
+three-node rehearsal environment are implemented. The k3s cluster and its
+services are still planned and are not deployed.
 The following diagram shows the intended cluster architecture:
 
 ```mermaid
