@@ -37,4 +37,53 @@ Follow the [documentation conventions](../reference/documentation.md) and run
 the [strict build](../runbooks/documentation-site.md#build-and-verify).
 Use a Conventional Commit PR title, such as `docs: document cluster recovery`.
 
-Cluster setup is planned; there is no provisioning quick start yet.
+## Rehearsal VMs
+
+The rehearsal environment uses three Ubuntu 24.04 LTS virtual machines
+managed by Vagrant and VirtualBox, using the `cloud-image/ubuntu-24.04`
+box pinned to version `20260926.0.0`. Install current versions of
+[VirtualBox](https://www.virtualbox.org/wiki/Downloads) and
+[Vagrant](https://developer.hashicorp.com/vagrant/install) on Windows before
+starting. The first boot downloads the Ubuntu box and may take several
+minutes. Vagrant waits up to 600 seconds (10 minutes) for SSH on each VM.
+Allow Windows to approve VirtualBox network-driver prompts if shown;
+Vagrant uses NAT plus a host-only network, not a bridged LAN connection. The
+default `/vagrant` shared folder is disabled; manage the VMs over SSH.
+
+Open PowerShell at the repository root and run:
+
+```powershell
+Set-Location .\vagrant
+vagrant validate
+vagrant up --provider=virtualbox
+vagrant status
+```
+
+`vagrant status` should list `k3s-1`, `k3s-2`, and `k3s-3` as `running`.
+Each VM has 2 CPUs and 3072 MB memory, with host-only addresses
+`192.168.56.11`, `192.168.56.12`, and `192.168.56.13`. Vagrant's default NAT
+interface remains enabled. The graphics controller is `VBoxSVGA` with 126 MB
+video memory.
+To start only one node, run `vagrant up k3s-1 --provider=virtualbox`.
+Verify hostnames and host-only addresses with:
+
+```powershell
+vagrant ssh k3s-1 -c "hostname; ip -brief address"
+vagrant ssh k3s-2 -c "hostname; ip -brief address"
+vagrant ssh k3s-3 -c "hostname; ip -brief address"
+```
+
+If startup fails, inspect the console in VirtualBox Manager and run
+`vagrant status`; a failed SSH boot check does not necessarily stop the VM.
+Changing the configured box does not replace an existing VM. To recreate a
+disposable rehearsal node, run `vagrant destroy -f k3s-1`, then
+`vagrant up k3s-1 --provider=virtualbox`. Destroying a node deletes its disk
+and all guest data.
+
+Connect to a node with `vagrant ssh k3s-1` (replace the name to choose another
+node). Shut down all nodes cleanly with
+`vagrant halt`; run `vagrant up --provider=virtualbox` from the same directory
+to start them again. The VMs remain registered and their disks are preserved.
+
+VM management runs in Windows PowerShell. Cluster setup is not yet implemented;
+once available, Ansible, kubectl, and Helm are intended to run from WSL.
