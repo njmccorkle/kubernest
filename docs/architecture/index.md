@@ -13,11 +13,10 @@ The workflows do not deploy infrastructure or the documentation site.
 The Vagrant definition and initial Ansible connectivity check for the
 three-node rehearsal environment are implemented. The k3s cluster and its
 services are still planned and are not deployed.
-Host preparation is implemented in the shared `site.yml` playbook for
-`k3s_nodes`, with `common` followed by `k3s_prerequisites`. The implemented
-baseline validates Ubuntu 24.04, applies common packages, configures timezone,
-manages `chrony`, persists required kernel modules and sysctl settings, and
-disables swap for k3s prerequisites.
+Host preparation now includes a shared Ansible baseline role for `k3s_nodes`
+that validates Ubuntu 24.04, applies common packages, configures timezone, and
+manages `chrony` through the shared `site.yml` playbook ordering (`common`
+before `k3s_prerequisites`).
 The following diagram shows the intended cluster architecture:
 
 ```mermaid
@@ -34,21 +33,13 @@ flowchart LR
 
 Rehearsal and production will share definitions, with differences expressed
 through inventories and values overlays. The owner must approve changes before
-an agent applies them to a live environment. Production mutation remains
-blocked until a confirmed production inventory exists and the target is
-explicitly approved.
+an agent applies them to a live environment.
 
 The selected bootstrap boundaries are recorded in
 [Cluster bootstrap and networking](../decisions/0002-cluster-bootstrap-and-networking.md):
 k3s `v1.37.2+k3s1`, environment-specific API DNS names, MetalLB for LoadBalancer
 services, k3s-managed Traefik, and a rehearsal MetalLB pool of
 `192.168.56.50-192.168.56.99`.
-
-See the [host preparation runbook](../runbooks/host-preparation.md) for current
-execution steps and approval boundaries.
-
-k3s bootstrap, ArgoCD bootstrap, platform components, and application workloads
-remain planned and are not yet deployed by this repository.
 
 See the [initial cluster design](../superpowers/specs/2026-11-25-kubernest-design.md)
 for the proposed components and unresolved choices, and the

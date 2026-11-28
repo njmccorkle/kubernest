@@ -27,7 +27,6 @@ nav:
   - Architecture: architecture/index.md
   - Runbooks:
       - Documentation site: runbooks/documentation-site.md
-      - Host preparation: runbooks/host-preparation.md
   - Reference:
       - Documentation conventions: reference/documentation.md
   - Decisions:
@@ -40,4 +39,3 @@ nav:
       - VirtualBox VM setup: superpowers/plans/2026-11-26-virtualbox-vm-setup.md
       - Kubernest end-to-end rollout: superpowers/plans/2026-11-26-kubernest-implementation.md
       - Shared Ansible inventory: superpowers/plans/2026-11-27-ansible-rehearsal-inventory.md
-      - Shared Ansible host preparation: superpowers/plans/2026-11-27-ansible-host-preparation.md

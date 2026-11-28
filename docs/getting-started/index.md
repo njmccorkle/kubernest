@@ -86,25 +86,18 @@ node). Shut down all nodes cleanly with
 to start them again. The VMs remain registered and their disks are preserved.
 
 VM management runs in Windows PowerShell. Install Ansible in WSL, not on
-Windows or the VMs.
+Windows or the VMs. The repository includes an Ansible inventory and a
+non-mutating connectivity check for the rehearsal nodes.
 
-From WSL, at the repository root, set Ansible configuration for this checkout,
-copy Vagrant-generated SSH keys into WSL's private SSH directory, and inspect
-the rehearsal inventory:
+From WSL, at the repository root, copy the Vagrant-generated SSH keys into
+WSL's private SSH directory and run connectivity plus host preflight checks:
 
 ```bash
 export ANSIBLE_CONFIG="$PWD/ansible.cfg"
 bash ansible/scripts/sync-vagrant-keys.sh
-ansible-inventory -i ansible/inventories/rehearsal/hosts.yml --graph
-```
-
-Then validate preflight and host-preparation playbooks before any mutation:
-
-```bash
 ansible-playbook --syntax-check -i ansible/inventories/rehearsal/hosts.yml ansible/playbooks/preflight.yml
 ansible-playbook -i ansible/inventories/rehearsal/hosts.yml ansible/playbooks/preflight.yml
-ansible-playbook --syntax-check -i ansible/inventories/rehearsal/hosts.yml ansible/playbooks/site.yml
-ansible-playbook --check -i ansible/inventories/rehearsal/hosts.yml ansible/playbooks/site.yml
+ansible-playbook -i ansible/inventories/rehearsal/hosts.yml ansible/playbooks/check-connectivity.yml
 ```
 
 Setting `ANSIBLE_CONFIG` explicitly is needed when the checkout is under
@@ -115,29 +108,13 @@ ignored by Git, and copies them to `~/.ssh/kubernest-vagrant` with owner-only
 permissions. If Vagrant state is in another checkout, set
 `KUBERNEST_VAGRANT_DIR` to that checkout's `vagrant` directory before running
 the script. Re-run it after recreating a VM so the copied keys stay current.
-The preflight playbook is non-mutating: it gathers facts, verifies SSH
+The preflight playbook is non-mutating: it only gathers facts, verifies SSH
 reachability, and asserts Ubuntu 24.04 with at least 2 vCPUs, 3072 MB memory,
-and 42949672960 bytes of usable storage on `/`.
-
-Host preparation is implemented in `ansible/playbooks/site.yml` (`common` and
-`k3s_prerequisites` roles). It is a mutating operation and requires explicit
-approval before any live rehearsal execution. Do not represent it as a
-documentation-only check.
-
-After explicit approval for rehearsal mutation, run:
-
-```bash
-export ANSIBLE_CONFIG="$PWD/ansible.cfg"
-ansible-playbook -i ansible/inventories/rehearsal/hosts.yml ansible/playbooks/site.yml
-```
-
-Do not run a mutating production playbook from this workflow. Production
-mutation remains blocked until a confirmed production inventory exists and the
-target is explicitly approved.
+and 42949672960 bytes of usable storage on `/`. The connectivity playbook
+should report `pong` for all three nodes and displays their gathered facts;
+neither playbook changes guest configuration.
 If a recreated VM has a new SSH host key, remove its old entry with
 `ssh-keygen -R 192.168.56.11` (use that node's address) before reconnecting.
-For full operational steps, expected results, and recovery actions, use the
-[host preparation runbook](../runbooks/host-preparation.md).
 
-Cluster bootstrap remains planned. Ansible, kubectl, and Helm are intended to
-run from WSL.
+Host preparation and cluster setup are not yet implemented. Ansible, kubectl,
+and Helm are intended to run from WSL.
