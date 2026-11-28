@@ -36,8 +36,10 @@ nav:
       - Initial cluster design: superpowers/specs/2026-11-25-kubernest-design.md
       - VirtualBox VM setup: superpowers/specs/2026-11-26-virtualbox-vm-setup-design.md
       - Reusable Ansible environments: superpowers/specs/2026-11-27-ansible-reusable-environments-design.md
+      - Rehearsal VM resource profile: superpowers/specs/2026-11-27-rehearsal-resource-profile-design.md
   - Implementation plans:
       - VirtualBox VM setup: superpowers/plans/2026-11-26-virtualbox-vm-setup.md
       - Kubernest end-to-end rollout: superpowers/plans/2026-11-26-kubernest-implementation.md
       - Shared Ansible inventory: superpowers/plans/2026-11-27-ansible-rehearsal-inventory.md
       - Reusable Ansible environments: superpowers/plans/2026-11-27-ansible-reusable-environments.md
+      - Rehearsal VM resource profile: superpowers/plans/2026-11-27-rehearsal-vm-resource-profile.md

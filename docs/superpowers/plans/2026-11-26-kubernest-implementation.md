@@ -12,7 +12,7 @@
 
 ## Global Constraints
 
-- Use the existing three Ubuntu 24.04 rehearsal VMs, each configured with 2 vCPUs and 3072 MB memory.
+- Use the existing three Ubuntu 24.04 rehearsal VMs, each configured with 1 vCPU and 3072 MB memory. The rehearsal inventory uses 1-vCPU/8-GiB preflight floors; shared defaults remain 2 vCPUs/40 GiB for future environments.
 - Keep Vagrant and VirtualBox management in Windows PowerShell; run Ansible, kubectl, and Helm from WSL.
 - Use three k3s server nodes with embedded etcd; verify that the cluster remains usable after one node fails.
 - Manage hosts with Ansible and in-cluster resources with ArgoCD.
@@ -49,7 +49,7 @@
 - Existing: `.github/workflows/release.yml`
 
 **Interfaces:**
-- Provides three Vagrant machines named `k3s-1`, `k3s-2`, and `k3s-3`, with host-only addresses `192.168.56.11` through `192.168.56.13`.
+- Provides three Vagrant machines named `k3s-1`, `k3s-2`, and `k3s-3`, each configured with 1 vCPU and 3072 MiB memory, with host-only addresses `192.168.56.11` through `192.168.56.13`.
 - Provides a rehearsal inventory, a helper that copies Vagrant SSH keys into WSL, and a non-mutating Ansible connectivity check.
 
 - [x] Add the MkDocs site, CI and release workflows, repository conventions, and initial cluster design.
@@ -96,16 +96,13 @@ Before any cluster provisioning, recheck current VM status and connectivity. The
 - [x] Refactor the rehearsal inventory so its nodes belong to `k3s_nodes` while preserving the `rehearsal` environment grouping.
 - [x] Add non-mutating checks for SSH reachability, supported Ubuntu release, CPU, memory, and required storage.
 - [x] Keep Ansible roles idempotent, prefer Ansible modules over shell commands, and guard unavoidable commands against repeated changes.
-- [ ] Verify syntax and connectivity against the rehearsal inventory. Task 11 verifies production after its inventory and credentials are available.
+- [x] Verify syntax and connectivity against the rehearsal inventory. Task 11 verifies production after its inventory and credentials are available.
 - [x] Document WSL setup, the explicit `ANSIBLE_CONFIG` setting, key synchronization, and expected preflight results.
 
-Current validation: both playbooks pass syntax checks and the connectivity play
-reports `pong` with `changed=0` for all three inventory nodes. The preflight
-fails its CPU assertion on all three recreated nodes: guests report 1 vCPU,
-although VirtualBox reports 2 configured CPUs with IOAPIC disabled. Guest
-memory is 2973 MiB and passes the selected 2900 MiB threshold, but root
-filesystems are about 9.28 GB rather than 40 GiB. Do not start host preparation
-until the rehearsal VMs meet the preflight requirements.
+Current validation: both playbooks pass syntax checks, the connectivity play
+reports `pong` with `changed=0`, and the preflight passes with `failed=0` on all
+three rehearsal nodes using the rehearsal floors of 1 vCPU and 8 GiB root
+storage. Shared defaults remain 2 vCPUs and 40 GiB.
 
 Run from WSL at the repository root:
 

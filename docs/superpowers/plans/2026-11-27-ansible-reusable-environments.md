@@ -15,7 +15,7 @@
 - Do not perform host preparation, cluster provisioning, or production/live-cluster changes. Recreate local rehearsal VMs only for explicitly approved validation.
 - Keep `k3s_nodes` environment-neutral; do not put rehearsal addresses or SSH credentials in that group.
 - Rehearsal allocates 3072 MiB per VM; preflight requires at least 2900 MiB guest-visible memory to account for OS and firmware reservations.
-- Preflight requires Ubuntu 24.04, at least 2 vCPUs, and at least 40 GiB root filesystem capacity.
+- Preflight requires Ubuntu 24.04 and at least 2900 MiB guest-visible memory. Shared resource defaults require 2 vCPUs and 40 GiB root filesystem capacity; the rehearsal inventory overrides these floors to 1 vCPU and 8 GiB.
 - Run Ansible from WSL and set `ANSIBLE_CONFIG="$PWD/ansible.cfg"` explicitly.
 - Do not begin roadmap Task 3 or later.
 
@@ -59,11 +59,12 @@ Expected: all three nodes appear in both groups; `k3s-1` resolves rehearsal addr
 - [x] Inspect and complete the preflight contract.
 
 Ensure `ansible/playbooks/preflight.yml` targets `k3s_nodes`, gathers facts,
-pings nodes, and asserts Ubuntu 24.04, at least 2 vCPUs, 2900 MiB of
-guest-visible memory, and 40 GiB root filesystem capacity. The 2900 MiB floor
-corresponds to the configured 3072 MiB VM allocation with OS and firmware
-reservations. Keep it non-mutating and provide a clear failure message for
-each unmet requirement.
+pings nodes, and asserts Ubuntu 24.04, the selected inventory's CPU and root
+filesystem floors, and 2900 MiB of guest-visible memory. Shared defaults are
+2 vCPUs and 40 GiB; the rehearsal inventory uses 1 vCPU and 8 GiB. The
+2900 MiB floor corresponds to the configured 3072 MiB VM allocation with OS
+and firmware reservations. Keep it non-mutating and provide a clear failure
+message for each unmet requirement.
 
 - [x] Add Ansible contributor guidance if absent.
 
@@ -78,7 +79,7 @@ synchronization, syntax-check and execution commands, expected checks, and
 that preflight does not modify hosts. Preserve the distinction between
 preflight and the later host-preparation task.
 
-- [ ] Run syntax checks and rehearsal validation.
+- [x] Run syntax checks and rehearsal validation.
 
 ```bash
 export ANSIBLE_CONFIG="$PWD/ansible.cfg"
@@ -93,12 +94,10 @@ Expected: both syntax checks pass; all three nodes respond `pong`; preflight
 passes every assertion and reports `changed=0`. If the VMs are unavailable,
 record the exact live-check blocker and do not mark live validation complete.
 
-Result: syntax checks and connectivity pass on the recreated rehearsal VMs.
-Preflight reports 1 vCPU per guest, despite VirtualBox allocating 2 CPUs, and
-the root filesystems are about 9.28 GB rather than the required 40 GiB. The
-guest memory fact is 2973 MiB and passes the selected 2900 MiB floor. With the
-CPU fact overridden only to isolate the RAM assertion, preflight passes memory
-and then fails storage. Do not change VM configuration in this Task 2 scope.
+Result: syntax checks and connectivity pass on the recreated rehearsal VMs, and
+preflight passes every assertion with `failed=0` on all three nodes using the
+rehearsal resource profile (1 vCPU, 8 GiB root). See
+`2026-11-27-rehearsal-vm-resource-profile.md`.
 
 - [x] Run applicable documentation and diff checks.
 
