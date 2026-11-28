@@ -111,62 +111,7 @@ If a run fails:
 Prefer corrective convergence over VM destruction so rehearsal disks and state
 remain available for troubleshooting.
 
-## Verification evidence (Task 5, blocked)
+## Verification evidence placeholder (Task 5)
 
-Execution date: 2026-11-27 (WSL `Ubuntu-24.04`, repository at
-`/mnt/c/git/copilot-worktrees/kubernest/njmccorkle-laughing-fishstick`).
-
-Read-only commands executed:
-
-```bash
-export ANSIBLE_CONFIG=/mnt/c/git/copilot-worktrees/kubernest/njmccorkle-laughing-fishstick/ansible.cfg
-ansible-inventory -i ansible/inventories/rehearsal/hosts.yml --graph
-ansible-inventory -i ansible/inventories/rehearsal/hosts.yml --host k3s-1
-bash ansible/scripts/sync-vagrant-keys.sh
-ansible-playbook --syntax-check -i ansible/inventories/rehearsal/hosts.yml ansible/playbooks/site.yml
-ANSIBLE_ROLES_PATH=ansible/roles ansible-playbook --syntax-check -i ansible/inventories/rehearsal/hosts.yml ansible/playbooks/site.yml
-ansible-playbook --syntax-check -i ansible/inventories/rehearsal/hosts.yml ansible/playbooks/check-connectivity.yml
-python -m yamllint --strict .
-python -m mkdocs build --strict
-```
-
-Observed results:
-
-- `ansible-inventory --graph`: passed (`k3s-1`, `k3s-2`, `k3s-3` present in
-  `k3s_nodes` and `rehearsal`).
-- `ansible-inventory --host k3s-1`: passed (host vars rendered).
-- `bash ansible/scripts/sync-vagrant-keys.sh`: **blocked**,
-  `Vagrant SSH key not found for k3s-1 .../vagrant/.vagrant/machines/k3s-1/virtualbox/private_key`.
-- `ansible-playbook --syntax-check ... site.yml` with only `ANSIBLE_CONFIG`:
-  **failed**, `role 'common' was not found`.
-- `ANSIBLE_ROLES_PATH=ansible/roles ansible-playbook --syntax-check ... site.yml`:
-  passed.
-- `ansible-playbook --syntax-check ... check-connectivity.yml`: passed.
-- `python -m yamllint --strict .`: **failed** (pre-existing newline-at-EOF
-  violations in `ansible/group_vars/k3s_nodes.yml`,
-  `ansible/playbooks/site.yml`, and `ansible/roles/common/handlers/main.yml`).
-- `python -m mkdocs build --strict`: passed.
-
-Current status: live rehearsal convergence and idempotency verification is
-**blocked**. Rehearsal VMs/keys are not present, no mutating playbook run was
-performed, and no convergence claim is made.
-
-### Commands remaining after explicit approval and VM creation
-
-Run the following only after explicit approval for rehearsal mutation and after
-the rehearsal VMs are confirmed running with synced SSH keys:
-
-```bash
-export ANSIBLE_CONFIG="$PWD/ansible.cfg"
-bash ansible/scripts/sync-vagrant-keys.sh
-ansible-playbook -i ansible/inventories/rehearsal/hosts.yml ansible/playbooks/site.yml
-ansible-playbook -i ansible/inventories/rehearsal/hosts.yml ansible/playbooks/site.yml
-ansible -i ansible/inventories/rehearsal/hosts.yml k3s_nodes -b -m command -a "lsb_release -ds"
-ansible -i ansible/inventories/rehearsal/hosts.yml k3s_nodes -b -m command -a "findmnt -n -o AVAIL -b /"
-ansible -i ansible/inventories/rehearsal/hosts.yml k3s_nodes -b -m command -a "swapon --show"
-ansible -i ansible/inventories/rehearsal/hosts.yml k3s_nodes -b -m command -a "cat /etc/modules-load.d/k3s.conf"
-ansible -i ansible/inventories/rehearsal/hosts.yml k3s_nodes -b -m command -a "cat /etc/sysctl.d/99-k3s.conf"
-ansible -i ansible/inventories/rehearsal/hosts.yml k3s_nodes -b -m command -a "sysctl net.ipv4.ip_forward net.bridge.bridge-nf-call-iptables net.bridge.bridge-nf-call-ip6tables"
-ansible -i ansible/inventories/rehearsal/hosts.yml k3s_nodes -b -m command -a "systemctl is-enabled chrony && systemctl is-active chrony"
-ansible-playbook -i ansible/inventories/rehearsal/hosts.yml ansible/playbooks/check-connectivity.yml
-```
+Measured command-by-command execution evidence is tracked in Task 5 and is not
+recorded in this Task 4 runbook update.
