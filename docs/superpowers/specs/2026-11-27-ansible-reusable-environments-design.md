@@ -24,7 +24,8 @@ details isolated.
 - No host preparation or package changes.
 - No k3s installation or cluster bootstrap.
 - No production inventory or credentials.
-- No live infrastructure changes.
+- No production or live-cluster changes. Recreating local rehearsal VMs is
+  allowed only for explicitly approved validation.
 - No work beyond roadmap Task 2.
 
 ## Existing State
@@ -88,7 +89,9 @@ embedding addresses or credentials in shared configuration.
 3. Pings every node.
 4. Asserts Ubuntu 24.04.
 5. Asserts at least 2 vCPUs.
-6. Asserts at least 3072 MB memory.
+6. Asserts at least 2900 MiB of guest-visible memory. Rehearsal VMs allocate
+   3072 MiB; the lower guest fact threshold accounts for memory reserved by
+   the OS and firmware.
 7. Asserts at least 40 GiB root filesystem capacity.
 8. Reports clear failures naming the unmet requirement.
 

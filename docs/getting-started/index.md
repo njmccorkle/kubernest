@@ -111,9 +111,11 @@ permissions. If Vagrant state is in another checkout, set
 the script. Re-run it after recreating a VM so the copied keys stay current.
 The playbook should report `pong` for all three nodes and displays their
 gathered facts; it does not change guest configuration. The preflight also
-requires Ubuntu 24.04, at least 2 vCPUs, at least 3072 MB of memory, and at
-least 40 GiB of root filesystem capacity. It checks SSH reachability and
-hardware/software prerequisites without changing host state.
+requires Ubuntu 24.04, at least 2 vCPUs, at least 2900 MiB of guest-visible
+memory, and at least 40 GiB of root filesystem capacity. The Vagrant
+configuration allocates 3072 MiB per VM; the guest-visible threshold accounts
+for memory reserved by the OS and firmware. Preflight checks SSH reachability
+and hardware/software prerequisites without changing host state.
 If a recreated VM has a new SSH host key, remove its old entry with
 `ssh-keygen -R 192.168.56.11` (use that node's address) before reconnecting.
 

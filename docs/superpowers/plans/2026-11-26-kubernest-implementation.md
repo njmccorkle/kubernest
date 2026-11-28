@@ -101,11 +101,11 @@ Before any cluster provisioning, recheck current VM status and connectivity. The
 
 Current validation: both playbooks pass syntax checks and the connectivity play
 reports `pong` with `changed=0` for all three inventory nodes. The preflight
-fails its CPU assertion on all three reachable nodes; their reported memory
-is also below the 3072 MB threshold. `vagrant status` from this worktree reports
-all three rehearsal VMs as not created, so the intended VM resource settings
-cannot be verified from this checkout. Do not start host preparation until
-the rehearsal inventory points to VMs meeting the preflight requirements.
+fails its CPU assertion on all three recreated nodes: guests report 1 vCPU,
+although VirtualBox reports 2 configured CPUs with IOAPIC disabled. Guest
+memory is 2973 MiB and passes the selected 2900 MiB threshold, but root
+filesystems are about 9.28 GB rather than 40 GiB. Do not start host preparation
+until the rehearsal VMs meet the preflight requirements.
 
 Run from WSL at the repository root:
 

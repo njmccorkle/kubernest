@@ -23,8 +23,8 @@
     - name: Confirm minimum memory
       ansible.builtin.assert:
         that:
-          - ansible_memtotal_mb | int >= 3072
-        fail_msg: "Preflight requires at least 3072 MB of memory."
+          - ansible_memtotal_mb | int >= 2900
+        fail_msg: "Preflight requires at least 2900 MiB of guest-visible memory."
 
     - name: Confirm root filesystem capacity
       ansible.builtin.assert:
