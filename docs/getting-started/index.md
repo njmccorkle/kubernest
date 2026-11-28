@@ -111,9 +111,7 @@ permissions. If Vagrant state is in another checkout, set
 the script. Re-run it after recreating a VM so the copied keys stay current.
 The playbook should report `pong` for all three nodes and displays their
 gathered facts; it does not change guest configuration. The preflight requires
-Ubuntu 24.04 and at least 2900 MiB of guest-visible memory. Its shared defaults
-require 2 vCPUs and 40 GiB of root filesystem capacity; the rehearsal inventory
-overrides these floors to 1 vCPU and 8 GiB for the constrained local VMs. The
+Ubuntu 24.04 and at least 2900 MiB of guest-visible memory. Its shared defaults, defined in\n`ansible/playbooks/group_vars/all/k3s_requirements.yml`, require 2 vCPUs and\n40 GiB of root filesystem capacity; `ansible/inventories/rehearsal/group_vars/rehearsal.yml`\noverrides these floors to 1 vCPU and 8 GiB for the constrained local VMs. The
 pinned box currently provides about 9.28 GB (8.65 GiB) of root filesystem
 capacity. This rehearsal profile is not a production resource target. The
 Vagrant configuration allocates 3072 MiB per VM; the guest-visible threshold

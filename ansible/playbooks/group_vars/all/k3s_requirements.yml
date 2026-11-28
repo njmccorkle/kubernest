@@ -1,0 +1,5 @@
+---
+# Shared minimum node requirements; override per environment in the inventory.
+k3s_min_vcpus: 2
+k3s_min_memory_mb: 2900
+k3s_min_root_bytes: 42949672960

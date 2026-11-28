@@ -1,0 +1,4 @@
+---
+# Rehearsal VMs expose 1 vCPU and about 8.65 GiB of root storage.
+k3s_min_vcpus: 1
+k3s_min_root_bytes: 8589934592
