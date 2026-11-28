@@ -13,10 +13,6 @@ The workflows do not deploy infrastructure or the documentation site.
 The Vagrant definition and initial Ansible connectivity check for the
 three-node rehearsal environment are implemented. The k3s cluster and its
 services are still planned and are not deployed.
-Host preparation now includes a shared Ansible baseline role for `k3s_nodes`
-that validates Ubuntu 24.04, applies common packages, configures timezone, and
-manages `chrony` through the shared `site.yml` playbook ordering (`common`
-before `k3s_prerequisites`).
 The following diagram shows the intended cluster architecture:
 
 ```mermaid
