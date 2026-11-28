@@ -14,12 +14,17 @@
           - ansible_distribution_version is match("^24\\.04")
         fail_msg: "Preflight requires Ubuntu 24.04."
 
-    - name: Confirm minimum CPU and memory
+    - name: Confirm minimum CPU count
       ansible.builtin.assert:
         that:
           - ansible_processor_vcpus | int >= 2
+        fail_msg: "Preflight requires at least 2 vCPUs."
+
+    - name: Confirm minimum memory
+      ansible.builtin.assert:
+        that:
           - ansible_memtotal_mb | int >= 3072
-        fail_msg: "Preflight requires at least 2 vCPUs and 3072 MB of memory."
+        fail_msg: "Preflight requires at least 3072 MB of memory."
 
     - name: Confirm root filesystem capacity
       ansible.builtin.assert:
