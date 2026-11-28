@@ -29,14 +29,14 @@ nav:
       - Documentation site: runbooks/documentation-site.md
   - Reference:
       - Documentation conventions: reference/documentation.md
+      - Node requirements: reference/node-requirements.md
   - Decisions:
       - Use MkDocs: decisions/0001-use-mkdocs.md
       - Cluster bootstrap and networking: decisions/0002-cluster-bootstrap-and-networking.md
+      - Rehearsal node resource floors: decisions/0003-rehearsal-node-resource-floors.md
   - Design history:
       - Initial cluster design: superpowers/specs/2026-11-25-kubernest-design.md
       - VirtualBox VM setup: superpowers/specs/2026-11-26-virtualbox-vm-setup-design.md
-      - Reusable Ansible environments: superpowers/specs/2026-11-27-ansible-reusable-environments-design.md
-      - Rehearsal VM resource profile: superpowers/specs/2026-11-27-rehearsal-resource-profile-design.md
   - Implementation plans:
       - VirtualBox VM setup: superpowers/plans/2026-11-26-virtualbox-vm-setup.md
       - Kubernest end-to-end rollout: superpowers/plans/2026-11-26-kubernest-implementation.md
