@@ -93,16 +93,3 @@ No live mutating playbooks were run.
 - No plaintext credentials added.
 - No generated MkDocs site files created.
 
-
-## Fix round 1/5 evidence (Task 3)
-- Finding addressed: "Check-mode guard gap: runtime forwarding assertion is unguarded while handlers are skipped in check mode, so check runs may fail on not-yet-converged hosts."
-- Updated `ansible/roles/k3s_prerequisites/tasks/main.yml` so both runtime forwarding verification tasks are skipped in check mode:
-  - `Read runtime forwarding settings` now includes `when: not ansible_check_mode`
-  - `Assert runtime forwarding values are enabled` now includes `when: not ansible_check_mode`
-- Normal (non-check) runs still verify exact forwarding value `1` for:
-  - `net.ipv4.ip_forward`
-  - `net.bridge.bridge-nf-call-iptables`
-  - `net.bridge.bridge-nf-call-ip6tables`
-
-### Validation
-- `yamllint ansible\\roles\\k3s_prerequisites\\tasks\\main.yml ansible\\roles\\k3s_prerequisites\\handlers\\main.yml` → passed
