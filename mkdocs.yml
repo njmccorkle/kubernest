@@ -41,5 +41,3 @@ nav:
       - VirtualBox VM setup: superpowers/plans/2026-11-26-virtualbox-vm-setup.md
       - Kubernest end-to-end rollout: superpowers/plans/2026-11-26-kubernest-implementation.md
       - Shared Ansible inventory: superpowers/plans/2026-11-27-ansible-rehearsal-inventory.md
-      - Reusable Ansible environments: superpowers/plans/2026-11-27-ansible-reusable-environments.md
-      - Rehearsal VM resource profile: superpowers/plans/2026-11-27-rehearsal-vm-resource-profile.md
