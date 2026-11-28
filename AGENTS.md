@@ -41,6 +41,25 @@ Require explicit approval before applying infrastructure changes to a live
 environment. Confirm the target inventory or Kubernetes context before applying.
 Approval to edit configuration does not imply approval to deploy it.
 
+## Roadmap task boundaries
+
+Treat the implementation roadmap as a sequence of separately approved tasks.
+Before implementation or planning, identify the current roadmap task and limit
+all work to that task. Do not start, prepare, implement, or verify a later
+roadmap task unless the user explicitly approves advancing beyond the current
+one. A master plan or an approved plan does not grant approval to continue past
+the current task.
+
+After completing or blocking the current task, stop and report the completed
+scope and the next roadmap task. Wait for explicit approval before starting the
+next task.
+
+When a spec or implementation plan is waiting for the user's review or
+approval, stop. Do not use that waiting period to implement, refactor,
+prepare subsequent tasks, or advance to another roadmap task. Spec and plan
+approval cover only the material explicitly presented and accepted; it is not
+approval to continue beyond the approved scope.
+
 ## Kubernetes secrets
 
 Use Sealed Secrets for Kubernetes secrets committed to this repository.

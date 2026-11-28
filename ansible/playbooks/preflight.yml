@@ -1,0 +1,39 @@
+---
+- name: Validate k3s node readiness
+  hosts: k3s_nodes
+  gather_facts: true
+  become: false
+  tasks:
+    - name: Confirm Ansible can reach each node
+      ansible.builtin.ping:
+
+    - name: Confirm supported Ubuntu release
+      ansible.builtin.assert:
+        that:
+          - ansible_distribution == "Ubuntu"
+          - ansible_distribution_version is match("^24\\.04")
+        fail_msg: "Preflight requires Ubuntu 24.04."
+
+    - name: Confirm minimum CPU count
+      ansible.builtin.assert:
+        that:
+          - ansible_processor_vcpus | int >= 2
+        fail_msg: "Preflight requires at least 2 vCPUs."
+
+    - name: Confirm minimum memory
+      ansible.builtin.assert:
+        that:
+          - ansible_memtotal_mb | int >= 3072
+        fail_msg: "Preflight requires at least 3072 MB of memory."
+
+    - name: Confirm root filesystem capacity
+      ansible.builtin.assert:
+        that:
+          - >-
+            (ansible_mounts
+            | selectattr('mount', 'equalto', '/')
+            | map(attribute='size_total')
+            | first
+            | default(0)
+            | int) >= 42949672960
+        fail_msg: "Preflight requires at least 40 GiB of root filesystem capacity."

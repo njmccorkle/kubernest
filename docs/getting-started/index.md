@@ -90,12 +90,15 @@ Windows or the VMs. The repository includes an Ansible inventory and a
 non-mutating connectivity check for the rehearsal nodes.
 
 From WSL, at the repository root, copy the Vagrant-generated SSH keys into
-WSL's private SSH directory and run the check:
+WSL's private SSH directory and run the non-mutating connectivity check and
+node preflight:
 
 ```bash
 export ANSIBLE_CONFIG="$PWD/ansible.cfg"
 bash ansible/scripts/sync-vagrant-keys.sh
 ansible-playbook ansible/playbooks/check-connectivity.yml
+ansible-playbook --syntax-check -i ansible/inventories/rehearsal/hosts.yml ansible/playbooks/preflight.yml
+ansible-playbook -i ansible/inventories/rehearsal/hosts.yml ansible/playbooks/preflight.yml
 ```
 
 Setting `ANSIBLE_CONFIG` explicitly is needed when the checkout is under
@@ -107,7 +110,10 @@ permissions. If Vagrant state is in another checkout, set
 `KUBERNEST_VAGRANT_DIR` to that checkout's `vagrant` directory before running
 the script. Re-run it after recreating a VM so the copied keys stay current.
 The playbook should report `pong` for all three nodes and displays their
-gathered facts; it does not change guest configuration.
+gathered facts; it does not change guest configuration. The preflight also
+requires Ubuntu 24.04, at least 2 vCPUs, at least 3072 MB of memory, and at
+least 40 GiB of root filesystem capacity. It checks SSH reachability and
+hardware/software prerequisites without changing host state.
 If a recreated VM has a new SSH host key, remove its old entry with
 `ssh-keygen -R 192.168.56.11` (use that node's address) before reconnecting.
 
