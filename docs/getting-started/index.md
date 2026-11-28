@@ -60,7 +60,7 @@ vagrant status
 ```
 
 `vagrant status` should list `k3s-1`, `k3s-2`, and `k3s-3` as `running`.
-Each VM has 2 CPUs and 3072 MB memory, with host-only addresses
+Each VM has 1 CPU and 3072 MB memory, with host-only addresses
 `192.168.56.11`, `192.168.56.12`, and `192.168.56.13`. Vagrant's default NAT
 interface remains enabled. The graphics controller is `VBoxSVGA` with 126 MB
 video memory.
@@ -110,10 +110,10 @@ permissions. If Vagrant state is in another checkout, set
 `KUBERNEST_VAGRANT_DIR` to that checkout's `vagrant` directory before running
 the script. Re-run it after recreating a VM so the copied keys stay current.
 The playbook should report `pong` for all three nodes and displays their
-gathered facts; it does not change guest configuration. The preflight also
-requires Ubuntu 24.04, at least 2 vCPUs, at least 3072 MB of memory, and at
-least 40 GiB of root filesystem capacity. It checks SSH reachability and
-hardware/software prerequisites without changing host state.
+gathered facts; it does not change guest configuration. The preflight requires
+Ubuntu 24.04 and minimum CPU, memory, and root filesystem capacity, without
+changing host state. The rehearsal VMs use reduced CPU and storage floors; see
+[Node requirements](../reference/node-requirements.md).
 If a recreated VM has a new SSH host key, remove its old entry with
 `ssh-keygen -R 192.168.56.11` (use that node's address) before reconnecting.
 

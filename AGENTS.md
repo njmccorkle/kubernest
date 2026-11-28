@@ -44,6 +44,12 @@ Approval to edit configuration does not imply approval to deploy it.
 ## Roadmap task boundaries
 
 Treat the implementation roadmap as a sequence of separately approved tasks.
+Before asking for approval of a design, spec, plan, or proposal, show the
+complete proposed content in the conversation. A link to a file is not a
+substitute for presenting the material. State the scope, important tradeoffs,
+and exact approval being requested. Do not ask the user to approve a document
+they have not seen.
+
 Before implementation or planning, identify the current roadmap task and limit
 all work to that task. Do not start, prepare, implement, or verify a later
 roadmap task unless the user explicitly approves advancing beyond the current

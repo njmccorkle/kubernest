@@ -17,14 +17,14 @@
     - name: Confirm minimum CPU count
       ansible.builtin.assert:
         that:
-          - ansible_processor_vcpus | int >= 2
-        fail_msg: "Preflight requires at least 2 vCPUs."
+          - (ansible_processor_vcpus | int) >= (k3s_min_vcpus | int)
+        fail_msg: "Preflight requires at least {{ k3s_min_vcpus }} vCPUs."
 
     - name: Confirm minimum memory
       ansible.builtin.assert:
         that:
-          - ansible_memtotal_mb | int >= 3072
-        fail_msg: "Preflight requires at least 3072 MB of memory."
+          - (ansible_memtotal_mb | int) >= (k3s_min_memory_mb | int)
+        fail_msg: "Preflight requires at least {{ k3s_min_memory_mb }} MiB of guest-visible memory."
 
     - name: Confirm root filesystem capacity
       ansible.builtin.assert:
@@ -35,5 +35,8 @@
             | map(attribute='size_total')
             | first
             | default(0)
-            | int) >= 42949672960
-        fail_msg: "Preflight requires at least 40 GiB of root filesystem capacity."
+            | int) >= (k3s_min_root_bytes | int)
+        fail_msg: >-
+          Preflight requires at least
+          {{ ((k3s_min_root_bytes | int) / 1073741824) | int }} GiB of root
+          filesystem capacity.
